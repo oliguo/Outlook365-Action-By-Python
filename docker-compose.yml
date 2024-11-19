@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  outlook365-clean-python:
+    image: outlook365-clean-python
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    environment:
+      - TZ=Asia/Hong_Kong  # Set timezone
+    command: >
+      sh -c "
+        echo '0 23 * * * python /app/check_outlook_storage.py >> /app/logs/check_outlook_storage.log 2>&1' >> /etc/crontabs/root && 
+        echo '0 23 * * 5 python /app/delete_all_mails.py >> /app/logs/delete_all_mails.log 2>&1' >> /etc/crontabs/root &&
+        crond -f
+      "
