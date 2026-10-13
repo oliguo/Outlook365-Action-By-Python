@@ -1,3 +1,5 @@
 app/myenv/*
 app/credentials.txt
 app/accounts.csv
+app/deleted_mails.log
+app/outlook_storage.csv

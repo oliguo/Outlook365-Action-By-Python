@@ -50,18 +50,26 @@ def delete_all_emails(access_token, email, client_id, tenant_id, client_secret):
 
             for message in messages:
                 message_id = message['id']
-                delete_url = f"https://graph.microsoft.com/v1.0/users/{email}/messages/{message_id}"
-                delete_response = requests.delete(delete_url, headers=headers)
+                
+                # UPDATED: Appended /permanentDelete to the endpoint
+                delete_url = f"https://graph.microsoft.com/v1.0/users/{email}/messages/{message_id}/permanentDelete"
+                
+                # UPDATED: Changed from requests.delete() to requests.post()
+                delete_response = requests.post(delete_url, headers=headers)
+                
                 if delete_response.status_code == 401:
                     logging.info(f"{datetime.now()} - Token expired. Refreshing token.")
                     access_token, token_expiry = get_access_token(client_id, tenant_id, client_secret)
                     headers['Authorization'] = f'Bearer {access_token}'
-                    delete_response = requests.delete(delete_url, headers=headers)
+                    
+                    # UPDATED: Changed from requests.delete() to requests.post()
+                    delete_response = requests.post(delete_url, headers=headers)
+                    
                 delete_response.raise_for_status()
             
             time.sleep(1)  # Adding a delay between batches
 
-        logging.info(f"{datetime.now()} - Deleted all messages in folder {folder['displayName']} for {email}")
+        logging.info(f"{datetime.now()} - Permanently deleted all messages in folder {folder['displayName']} for {email}")
 
 # Read credentials
 credentials = {}
